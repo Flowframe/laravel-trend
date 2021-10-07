@@ -1,0 +1,6 @@
+url: https://github.com/flowframe/laravel-trend
+name: laravel-trend
+fullName: flowframe/laravel-trend
+description: Generate trends for your models. Easily generate charts or reports.
+language: PHP
+license: MIT
