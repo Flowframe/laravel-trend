@@ -124,10 +124,22 @@ class Trend
 
     public function mapValuesToDates(Collection $values): Collection
     {
-        return $this->getDatePeriod()
-            ->flatMap(fn (Carbon $date) => [$date->format($this->getCarbonDateFormat()) => 0])
-            ->merge($values->flatMap(fn ($value) => [$value->date => $value->aggregate]))
-            ->sortKeys();
+        $values = $values->map(fn ($value) => new TrendValue(
+            date: $value->date,
+            aggregate: $value->aggregate,
+        ));
+
+        $placeholders = $this->getDatePeriod()->map(
+            fn (Carbon $date) => new TrendValue(
+                date: $date->format($this->getCarbonDateFormat()),
+                aggregate: 0,
+            )
+        );
+
+        return $values
+            ->merge($placeholders)
+            ->unique('date')
+            ->flatten();
     }
 
     protected function getDatePeriod(): Collection
