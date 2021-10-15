@@ -8,3 +8,4 @@ We currently support two drivers:
 
 -   MySQL
 -   Sqlite
+-   PostgreSQL
