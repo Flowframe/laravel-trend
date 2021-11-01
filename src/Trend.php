@@ -5,6 +5,7 @@ namespace Flowframe\Trend;
 use Carbon\CarbonPeriod;
 use Error;
 use Flowframe\Trend\Adapters\MySqlAdapter;
+use Flowframe\Trend\Adapters\PgsqlAdapter;
 use Flowframe\Trend\Adapters\SqliteAdapter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -157,6 +158,7 @@ class Trend
         $adapter = match ($this->builder->getConnection()->getDriverName()) {
             'mysql' => new MySqlAdapter(),
             'sqlite' => new SqliteAdapter(),
+            'pgsql' => new PgsqlAdapter(),
             default => throw new Error('Unsupported database driver.'),
         };
 
