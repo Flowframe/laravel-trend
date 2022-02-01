@@ -140,6 +140,7 @@ class Trend
         return $values
             ->merge($placeholders)
             ->unique('date')
+            ->sort()
             ->flatten();
     }
 
