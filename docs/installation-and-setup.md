@@ -77,3 +77,22 @@ You can use the following aggregates:
 -   `max('column')`
 -   `min('column')`
 -   `count('*')`
+
+## Settings
+
+You can use the following settings:
+
+- `dataColumn('column')`
+- `datapointAlias('alias')`
+
+### dateColumn()  
+The trend will per default be based on the 'created_at' attribute of your model.
+You can change this to use another field by using ```->dateColumn()```:
+
+- `datecolumn('column')`
+
+### datapointAlias()
+If your model already contains a field names ```date``` you will have to set the ```datapointAlias``` to something else.
+The value should not an existing field in your table or a reserved word.
+
+- `datapointAlias('datapointAlias')`
