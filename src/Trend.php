@@ -21,6 +21,8 @@ class Trend
 
     public string $dateColumn = 'created_at';
 
+    public string $datapointAlias = 'date';
+
     public function __construct(public Builder $builder)
     {
     }
@@ -82,17 +84,24 @@ class Trend
         return $this;
     }
 
+    public function datapointAlias(string $alias): self
+    {
+        $this->datapointAlias = $alias;
+
+        return $this;
+    }
+
     public function aggregate(string $column, string $aggregate): Collection
     {
         $values = $this->builder
             ->toBase()
             ->selectRaw("
-                {$this->getSqlDate()} as date,
+                {$this->getSqlDate()} as {$this->datapointAlias},
                 {$aggregate}({$column}) as aggregate
             ")
             ->whereBetween($this->dateColumn, [$this->start, $this->end])
-            ->groupBy('date')
-            ->orderBy('date')
+            ->groupBy($this->datapointAlias)
+            ->orderBy($this->datapointAlias)
             ->get();
 
         return $this->mapValuesToDates($values);
@@ -125,8 +134,8 @@ class Trend
 
     public function mapValuesToDates(Collection $values): Collection
     {
-        $values = $values->map(fn ($value) => new TrendValue(
-            date: $value->date,
+        $values = $values->map(fn ($value)  => new TrendValue(
+            date: $value->{$this->datapointAlias},
             aggregate: $value->aggregate,
         ));
 
