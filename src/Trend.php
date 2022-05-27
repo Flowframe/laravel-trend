@@ -134,7 +134,7 @@ class Trend
 
     public function mapValuesToDates(Collection $values): Collection
     {
-        $values = $values->map(fn ($value)  => new TrendValue(
+        $values = $values->map(fn ($value) => new TrendValue(
             date: $value->{$this->datapointAlias},
             aggregate: $value->aggregate,
         ));
