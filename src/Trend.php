@@ -2,22 +2,24 @@
 
 namespace Flowframe\Trend;
 
+use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Error;
 use Flowframe\Trend\Adapters\MySqlAdapter;
 use Flowframe\Trend\Adapters\PgsqlAdapter;
 use Flowframe\Trend\Adapters\SqliteAdapter;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class Trend
 {
     public string $interval;
 
-    public Carbon $start;
+    public bool $isTimestamp = false;
 
-    public Carbon $end;
+    public Carbon|int $start;
+
+    public Carbon|int $end;
 
     public string $dateColumn = 'created_at';
 
@@ -39,6 +41,16 @@ class Trend
     {
         $this->start = $start;
         $this->end = $end;
+
+        return $this;
+    }
+
+    public function betweenTimestamp(Carbon $start, Carbon $end): self
+    {
+        $this->isTimestamp = true;
+
+        $this->start = $start->timestamp;
+        $this->end = $end->timestamp;
 
         return $this;
     }
@@ -148,8 +160,8 @@ class Trend
     {
         return collect(
             CarbonPeriod::between(
-                $this->start,
-                $this->end,
+                is_numeric($this->start) ? Carbon::createFromTimestamp($this->start)->toDateTimeString() : $this->start,
+                is_numeric($this->end) ? Carbon::createFromTimestamp($this->end)->toDateTimeString() : $this->end,
             )->interval("1 {$this->interval}")
         );
     }
@@ -163,7 +175,7 @@ class Trend
             default => throw new Error('Unsupported database driver.'),
         };
 
-        return $adapter->format($this->dateColumn, $this->interval);
+        return $adapter->format($this->dateColumn, $this->interval, $this->isTimestamp);
     }
 
     protected function getCarbonDateFormat(): string
