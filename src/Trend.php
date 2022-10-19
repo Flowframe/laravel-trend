@@ -123,6 +123,16 @@ class Trend
         return $this->aggregate($column, 'count');
     }
 
+    public function placeholders(string $format): Collection
+    {
+        return $this->getDatePeriod()->map(
+            fn (Carbon $date) => new TrendValue(
+                date: $date->format($format),
+                aggregate: 0,
+            )
+        );
+    }
+
     public function mapValuesToDates(Collection $values): Collection
     {
         $values = $values->map(fn ($value) => new TrendValue(
@@ -130,15 +140,8 @@ class Trend
             aggregate: $value->aggregate,
         ));
 
-        $placeholders = $this->getDatePeriod()->map(
-            fn (Carbon $date) => new TrendValue(
-                date: $date->format($this->getCarbonDateFormat()),
-                aggregate: 0,
-            )
-        );
-
         return $values
-            ->merge($placeholders)
+            ->merge($this->placeholders($this->getCarbonDateFormat()))
             ->unique('date')
             ->sort()
             ->flatten();

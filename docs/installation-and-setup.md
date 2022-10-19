@@ -77,3 +77,16 @@ You can use the following aggregates:
 -   `max('column')`
 -   `min('column')`
 -   `count('*')`
+
+## Placeholders
+
+You can also get the placeholders in your decired [date format](https://www.php.net/manual/en/datetime.format.php):
+
+```php
+$trend = Trend::model(...)
+    ->between(...)
+    ->perDay();
+
+$placeholders = $trend->placeholders('D');
+$totals = $trend->count();
+```
