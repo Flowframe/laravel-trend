@@ -6,6 +6,11 @@ use Error;
 
 class SqliteAdapter extends AbstractAdapter
 {
+    public function convertTimezone(string $column, string $from, string $to): string
+    {
+        throw new Error('Timezone conversion not supported for SQLite.');
+    }
+
     public function format(string $column, string $interval): string
     {
         $format = match ($interval) {

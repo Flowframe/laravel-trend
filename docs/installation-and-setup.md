@@ -77,3 +77,18 @@ You can use the following aggregates:
 -   `max('column')`
 -   `min('column')`
 -   `count('*')`
+
+## Timezone support
+
+You can specify the timezone of the database and the timezone of the aggregation:
+
+```php
+$trend = Trend::model(...)
+    ->between(...)
+    ->perMonth()
+    ->convertTimezone(
+        from: 'UTC',
+        to: 'Europe/Amsterdam',
+    )
+    ->count();
+```
