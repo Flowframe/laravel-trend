@@ -84,6 +84,13 @@ class Trend
         return $this;
     }
 
+    public function dateAlias(string $alias): self
+    {
+        $this->dateAlias = $alias;
+
+        return $this;
+    }
+
     public function aggregate(string $column, string $aggregate): Collection
     {
         $values = $this->builder
