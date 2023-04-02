@@ -4,8 +4,9 @@ title: Drivers
 order: 4
 ---
 
-We currently support three drivers:
+We currently support four drivers:
 
 -   MySQL
 -   SQLite
 -   PostgreSQL
+-   SQL Server
