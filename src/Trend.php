@@ -4,9 +4,11 @@ namespace Flowframe\Trend;
 
 use Carbon\CarbonPeriod;
 use Error;
+use Flowframe\Trend\Adapters\AbstractAdapter;
 use Flowframe\Trend\Adapters\MySqlAdapter;
 use Flowframe\Trend\Adapters\PgsqlAdapter;
 use Flowframe\Trend\Adapters\SqliteAdapter;
+use Flowframe\Trend\Adapters\SqlServerAdapter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -19,12 +21,19 @@ class Trend
 
     public Carbon $end;
 
+    public AbstractAdapter $adapter;
+
     public string $dateColumn = 'created_at';
 
     public string $dateAlias = 'date';
 
+    public string $groupColumn;
+
+    public string $sqlDate;
+
     public function __construct(public Builder $builder)
     {
+        $this->adapter();
     }
 
     public static function query(Builder $builder): self
@@ -35,6 +44,19 @@ class Trend
     public static function model(string $model): self
     {
         return new static($model::query());
+    }
+
+    public function adapter(): self
+    {
+        $this->adapter = match ($this->builder->getConnection()->getDriverName()) {
+            'mysql' => new MySqlAdapter(),
+            'sqlite' => new SqliteAdapter(),
+            'pgsql' => new PgsqlAdapter(),
+            'sqlsrv' => new SqlServerAdapter(),
+            default => throw new Error('Unsupported database driver.'),
+        };
+
+        return $this;
     }
 
     public function between($start, $end): self
@@ -91,16 +113,25 @@ class Trend
         return $this;
     }
 
+    public function groupColumn(): self
+    {
+        $this->groupColumn = $this->adapter->groupColumn($this) ?? $this->dateAlias;
+
+        return $this;
+    }
+
     public function aggregate(string $column, string $aggregate): Collection
     {
+        $this->getSqlDate()->groupColumn();
+
         $values = $this->builder
             ->toBase()
             ->selectRaw("
-                {$this->getSqlDate()} as {$this->dateAlias},
+                {$this->sqlDate} as {$this->dateAlias},
                 {$aggregate}({$column}) as aggregate
             ")
             ->whereBetween($this->dateColumn, [$this->start, $this->end])
-            ->groupBy($this->dateAlias)
+            ->groupByRaw($this->groupColumn)
             ->orderBy($this->dateAlias)
             ->get();
 
@@ -163,16 +194,11 @@ class Trend
         );
     }
 
-    protected function getSqlDate(): string
+    protected function getSqlDate(): self
     {
-        $adapter = match ($this->builder->getConnection()->getDriverName()) {
-            'mysql' => new MySqlAdapter(),
-            'sqlite' => new SqliteAdapter(),
-            'pgsql' => new PgsqlAdapter(),
-            default => throw new Error('Unsupported database driver.'),
-        };
+        $this->sqlDate = $this->adapter->format($this->dateColumn, $this->interval);
 
-        return $adapter->format($this->dateColumn, $this->interval);
+        return $this;
     }
 
     protected function getCarbonDateFormat(): string
