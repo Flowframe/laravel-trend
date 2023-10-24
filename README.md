@@ -120,6 +120,5 @@ Please review [our security policy](../../security/policy) on how to report secu
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
-```
 
 This addition clarifies the usage of a custom date column in your Laravel Trend package.
