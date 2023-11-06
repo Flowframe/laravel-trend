@@ -4,9 +4,9 @@ Generate trends for your models. Easily generate charts or reports.
 
 ## Why?
 
-Most applications require charts or reports to be generated. Doing this over again, and again can be a painfull process. That's why we've created a fluent Laravel package to solve this problem.
+Most applications require charts or reports to be generated. Doing this over again, and again can be a painful process. That's why we've created a fluent Laravel package to solve this problem.
 
-You can aggregate average, min, max, and totals per minute, hour, day, month and year.
+You can aggregate average, min, max, and totals per minute, hour, day, month, and year.
 
 ## Installation
 
@@ -83,6 +83,22 @@ You can use the following aggregates:
 -   `max('column')`
 -   `min('column')`
 -   `count('*')`
+
+## Date Column
+
+By default, laravel-trend assumes that the model on which the operation is being performed has a `created_at` date column. If your model uses a different column name for the date or you want to use a different one, you should specify it using the `dateColumn(string $column)` method.
+
+Example:
+
+```php
+Trend::model(Order::class)
+    ->dateColumn('custom_date_column')
+    ->between(...)
+    ->perDay()
+    ->count();
+```
+
+This allows you to work with models that have custom date column names or when you want to analyze data based on a different date column.
 
 ## Drivers
 
