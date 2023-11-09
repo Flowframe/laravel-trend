@@ -107,6 +107,7 @@ We currently support three drivers:
 -   MySQL
 -   SQLite
 -   PostgreSQL
+-   SQL Server
 
 ## Security Vulnerabilities
 
