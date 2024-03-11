@@ -72,6 +72,7 @@ You can use the following aggregates intervals:
 -   `perHour()`
 -   `perDay()`
 -   `perMonth()`
+-   `perQuarter()`
 -   `perYear()`
 
 ## Aggregates
