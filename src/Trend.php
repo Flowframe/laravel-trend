@@ -72,6 +72,11 @@ class Trend
         return $this->interval('month');
     }
 
+    public function perQuarter(): self
+    {
+        return $this->interval('quarter');
+    }
+
     public function perYear(): self
     {
         return $this->interval('year');
@@ -141,7 +146,9 @@ class Trend
 
         $placeholders = $this->getDatePeriod()->map(
             fn (Carbon $date) => new TrendValue(
-                date: $date->format($this->getCarbonDateFormat()),
+                date: $this->interval === 'quarter'
+                    ? $date->quarter
+                    : $date->format($this->getCarbonDateFormat()),
                 aggregate: 0,
             )
         );
