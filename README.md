@@ -105,6 +105,7 @@ This allows you to work with models that have custom date column names or when y
 We currently support three drivers:
 
 -   MySQL
+-   MariaDB
 -   SQLite
 -   PostgreSQL
 
