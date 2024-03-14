@@ -8,6 +8,10 @@ class MySqlAdapter extends AbstractAdapter
 {
     public function format(string $column, string $interval): string
     {
+        if ($interval === 'quarter') {
+            return "quarter({$column})";
+        }
+
         $format = match ($interval) {
             'minute' => '%Y-%m-%d %H:%i:00',
             'hour' => '%Y-%m-%d %H:00',
