@@ -2,22 +2,22 @@
 
 namespace Flowframe\Trend;
 
+use Carbon\CarbonInterface;
 use Carbon\CarbonPeriod;
 use Error;
 use Flowframe\Trend\Adapters\MySqlAdapter;
 use Flowframe\Trend\Adapters\PgsqlAdapter;
 use Flowframe\Trend\Adapters\SqliteAdapter;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class Trend
 {
     public string $interval;
 
-    public Carbon $start;
+    public CarbonInterface $start;
 
-    public Carbon $end;
+    public CarbonInterface $end;
 
     public string $dateColumn = 'created_at';
 
@@ -140,7 +140,7 @@ class Trend
         ));
 
         $placeholders = $this->getDatePeriod()->map(
-            fn (Carbon $date) => new TrendValue(
+            fn (CarbonInterface $date) => new TrendValue(
                 date: $date->format($this->getCarbonDateFormat()),
                 aggregate: 0,
             )
