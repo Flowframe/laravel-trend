@@ -14,6 +14,7 @@ use Illuminate\Support\Collection;
 class Trend
 {
     public string $interval;
+    public bool $calculateCumulative = false;
 
     public Carbon $start;
 
@@ -48,6 +49,13 @@ class Trend
     public function interval(string $interval): self
     {
         $this->interval = $interval;
+
+        return $this;
+    }
+
+    public function cumulative(bool $calculateCumulative = true): self
+    {
+        $this->calculateCumulative = $calculateCumulative;
 
         return $this;
     }
@@ -104,7 +112,9 @@ class Trend
             ->orderBy($this->dateAlias)
             ->get();
 
-        return $this->mapValuesToDates($values);
+        return $this->calculateCumulative
+            ? $this->mapValuesToDatesCumulative($values)
+            : $this->mapValuesToDates($values);
     }
 
     public function average(string $column): Collection
@@ -152,6 +162,29 @@ class Trend
             ->sort()
             ->flatten();
     }
+
+    public function mapValuesToDatesCumulative(Collection $values): Collection
+    {
+        $previousAggregate = 0;
+        $mapValues = [];
+
+        foreach ($this->getDatePeriod() as $period) {
+            $periodString = $period->format($this->getCarbonDateFormat());
+            $value = $values->firstWhere($this->dateAlias, $periodString);
+            $previousAggregate += data_get($value,'aggregate',0);
+            $mapValues[] = new TrendValue(
+                date: $periodString,
+                aggregate: $previousAggregate,
+            );
+        }
+
+
+        return collect($mapValues)
+            ->unique('date')
+            ->sort()
+            ->flatten();
+    }
+
 
     protected function getDatePeriod(): Collection
     {
