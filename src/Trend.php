@@ -114,7 +114,8 @@ class Trend
                 $dbDriver === 'sqlsrv',
                 fn ($query) => $query->groupBy($sqlDate)
             )
-            ->orderBy($this->dateAlias);
+            ->orderBy($this->dateAlias)
+            ->get();
 
         return $this->mapValuesToDates($values);
     }
