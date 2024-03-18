@@ -94,6 +94,8 @@ class Trend
 
     public function aggregate(string $column, string $aggregate): Collection
     {
+        $dbDriver = $this->builder->getConnection()->getDriverName();
+
         $values = $this->builder
             ->toBase()
             ->selectRaw("
@@ -101,9 +103,17 @@ class Trend
                 {$aggregate}({$column}) as aggregate
             ")
             ->whereBetween($this->dateColumn, [$this->start, $this->end])
-            ->groupBy($this->dateAlias)
-            ->orderBy($this->dateAlias)
-            ->get();
+            // For all db drivers except sqlserver
+            ->when(
+                $dbDriver !== 'sqlsrv',
+                fn ($query) => $query->groupBy($this->dateAlias)
+            )
+            // Specifically for sqlsrv driver
+            ->when(
+                $dbDriver === 'sqlsrv',
+                fn ($query) => $query->groupBy($this->getSqlDate())
+            )
+            ->orderBy($this->dateAlias);
 
         return $this->mapValuesToDates($values);
     }
@@ -170,7 +180,7 @@ class Trend
             'mysql', 'mariadb' => new MySqlAdapter(),
             'sqlite' => new SqliteAdapter(),
             'pgsql' => new PgsqlAdapter(),
-            'sqlserver' => new SqlserverAdapter(),
+            'sqlsrv' => new SqlserverAdapter(),
             default => throw new Error('Unsupported database driver.'),
         };
 
