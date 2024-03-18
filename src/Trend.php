@@ -7,6 +7,7 @@ use Error;
 use Flowframe\Trend\Adapters\MySqlAdapter;
 use Flowframe\Trend\Adapters\PgsqlAdapter;
 use Flowframe\Trend\Adapters\SqliteAdapter;
+use Flowframe\Trend\Adapters\SqlserverAdapter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -169,6 +170,7 @@ class Trend
             'mysql', 'mariadb' => new MySqlAdapter(),
             'sqlite' => new SqliteAdapter(),
             'pgsql' => new PgsqlAdapter(),
+            'sqlserver' => new SqlserverAdapter(),
             default => throw new Error('Unsupported database driver.'),
         };
 
