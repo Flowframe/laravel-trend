@@ -95,11 +95,12 @@ class Trend
     public function aggregate(string $column, string $aggregate): Collection
     {
         $dbDriver = $this->builder->getConnection()->getDriverName();
+        $sqlDate = $this->getSqlDate();
 
         $values = $this->builder
             ->toBase()
             ->selectRaw("
-                {$this->getSqlDate()} as {$this->dateAlias},
+                {$sqlDate} as {$this->dateAlias},
                 {$aggregate}({$column}) as aggregate
             ")
             ->whereBetween($this->dateColumn, [$this->start, $this->end])
@@ -111,7 +112,7 @@ class Trend
             // Specifically for sqlsrv driver
             ->when(
                 $dbDriver === 'sqlsrv',
-                fn ($query) => $query->groupBy($this->getSqlDate())
+                fn ($query) => $query->groupBy($sqlDate)
             )
             ->orderBy($this->dateAlias);
 
