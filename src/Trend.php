@@ -112,7 +112,7 @@ class Trend
             // Specifically for sqlsrv driver
             ->when(
                 $dbDriver === 'sqlsrv',
-                fn ($query) => $query->groupBy($sqlDate)
+                fn ($query) => $query->groupByRaw($sqlDate)
             )
             ->orderBy($this->dateAlias)
             ->get();
