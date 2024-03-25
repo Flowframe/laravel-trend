@@ -99,7 +99,7 @@ class Trend
                 {$this->getSqlDate()} as {$this->dateAlias},
                 {$aggregate}({$column}) as aggregate
             ")
-            ->whereBetween($this->dateColumn, [$this->start, $this->end])
+            ->whereBetween("{$this->builder->getModel()->getTable()}.$this->dateColumn", [$this->start, $this->end])
             ->groupBy($this->dateAlias)
             ->orderBy($this->dateAlias)
             ->get();
@@ -172,7 +172,7 @@ class Trend
             default => throw new Error('Unsupported database driver.'),
         };
 
-        return $adapter->format($this->dateColumn, $this->interval);
+        return $adapter->format("{$this->builder->getModel()->getTable()}.$this->dateColumn", $this->interval);
     }
 
     protected function getCarbonDateFormat(): string
