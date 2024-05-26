@@ -48,7 +48,7 @@ it('correctly aggregates data', function () {
         ->count(2)
         ->create(['created_at' => Carbon::parse('2024-01-03'), 'summable_column' => 15]);
 
-    $trend = Trend::query(Post::query());
+    $trend = Trend::model(Post::class);
 
     $startDate = Carbon::parse('2024-01-01');
     $endDate = Carbon::parse('2024-01-03');
