@@ -71,3 +71,9 @@ it('correctly sets the date column', function () {
     $trend->dateColumn('custom_date_column');
     expect($trend->dateColumn)->toBe('custom_date_column');
 });
+
+it('correctly sets the date alias', function () {
+    $trend = Trend::query(Post::query());
+    $trend->dateAlias('custom_date_alias');
+    expect($trend->dateAlias)->toBe('custom_date_alias');
+});
