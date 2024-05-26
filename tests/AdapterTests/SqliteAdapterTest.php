@@ -3,7 +3,7 @@
 use Flowframe\Trend\Adapters\SqliteAdapter;
 
 it('formats column for minute interval', function () {
-    $adapter = new SqliteAdapter();
+    $adapter = resolve(SqliteAdapter::class);
     $column = 'created_at';
     $interval = 'minute';
     $expectedFormat = "strftime('%Y-%m-%d %H:%M:00', {$column})";
@@ -14,7 +14,7 @@ it('formats column for minute interval', function () {
 });
 
 it('formats column for hour interval', function () {
-    $adapter = new SqliteAdapter();
+    $adapter = resolve(SqliteAdapter::class);
     $column = 'created_at';
     $interval = 'hour';
     $expectedFormat = "strftime('%Y-%m-%d %H:00', {$column})";
@@ -25,7 +25,7 @@ it('formats column for hour interval', function () {
 });
 
 it('formats column for day interval', function () {
-    $adapter = new SqliteAdapter();
+    $adapter = resolve(SqliteAdapter::class);
     $column = 'created_at';
     $interval = 'day';
     $expectedFormat = "strftime('%Y-%m-%d', {$column})";
@@ -36,7 +36,7 @@ it('formats column for day interval', function () {
 });
 
 it('formats column for month interval', function () {
-    $adapter = new SqliteAdapter();
+    $adapter = resolve(SqliteAdapter::class);
     $column = 'created_at';
     $interval = 'month';
     $expectedFormat = "strftime('%Y-%m', {$column})";
@@ -47,7 +47,7 @@ it('formats column for month interval', function () {
 });
 
 it('formats column for year interval', function () {
-    $adapter = new SqliteAdapter();
+    $adapter = resolve(SqliteAdapter::class);
     $column = 'created_at';
     $interval = 'year';
     $expectedFormat = "strftime('%Y', {$column})";
@@ -58,7 +58,7 @@ it('formats column for year interval', function () {
 });
 
 it('throws error for invalid interval', function () {
-    $adapter = new SqliteAdapter();
+    $adapter = resolve(SqliteAdapter::class);
     $column = 'created_at';
     $interval = 'invalid_interval';
 
