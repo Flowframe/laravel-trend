@@ -1,14 +1,15 @@
 <?php
 
+use Flowframe\Trend\Tests\fixtures\Models\Post;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Illuminate\Support\Carbon;
 
 it('correctly maps values to dates', function () {
-    $trend = resolve(Trend::class);
+    $trend = new Trend(Post::query());
 
     $startDate = Carbon::parse('2024-01-01');
-    $endDate   = Carbon::parse('2024-01-10');
+    $endDate = Carbon::parse('2024-01-10');
 
     $trend->between($startDate, $endDate)->perDay();
 
@@ -31,6 +32,35 @@ it('correctly maps values to dates', function () {
         new TrendValue('2024-01-08', 0),
         new TrendValue('2024-01-09', 0),
         new TrendValue('2024-01-10', 0),
+    ]);
+
+    expect($result->values())->toEqual($expected->values());
+});
+
+it('correctly aggregates data', function () {
+    Post::factory()
+        ->count(2)
+        ->create(['created_at' => Carbon::parse('2024-01-01'), 'summable_column' => 5]);
+    Post::factory()
+        ->count(2)
+        ->create(['created_at' => Carbon::parse('2024-01-02'), 'summable_column' => 10]);
+    Post::factory()
+        ->count(2)
+        ->create(['created_at' => Carbon::parse('2024-01-03'), 'summable_column' => 15]);
+
+    $trend = new Trend(Post::query());
+
+    $startDate = Carbon::parse('2024-01-01');
+    $endDate = Carbon::parse('2024-01-03');
+
+    $trend->between($startDate, $endDate)->perDay();
+
+    $result = $trend->aggregate('summable_column', 'sum');
+
+    $expected = collect([
+        new TrendValue('2024-01-01', 10),
+        new TrendValue('2024-01-02', 20),
+        new TrendValue('2024-01-03', 30),
     ]);
 
     expect($result->values())->toEqual($expected->values());

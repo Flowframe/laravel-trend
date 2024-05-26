@@ -5,6 +5,7 @@ namespace Flowframe\Trend\Tests;
 use Flowframe\Trend\TrendServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -12,25 +13,31 @@ class TestCase extends Orchestra
     {
         parent::setUp();
 
+        $this->loadMigrationsFrom(__DIR__.'/fixtures/database/migrations');
+
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Flowframe\\Trend\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName) => 'Flowframe\\Trend\\Tests\\fixtures\\database\\factories\\'.class_basename($modelName).'Factory'
         );
     }
 
-    protected function getPackageProviders($app)
+    /**
+     * @return array<int, class-string<PackageServiceProvider>>
+     */
+    protected function getPackageProviders($app): array
     {
         return [
             TrendServiceProvider::class,
         ];
     }
 
-    public function getEnvironmentSetUp($app)
+    public function getEnvironmentSetUp($app): void
     {
         config()->set('database.default', 'testing');
 
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_laravel-trend_table.php.stub';
-        $migration->up();
-        */
+        config()->set('database.connections.testing', [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'prefix' => '',
+        ]);
     }
 }
