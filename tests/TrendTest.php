@@ -6,7 +6,7 @@ use Flowframe\Trend\TrendValue;
 use Illuminate\Support\Carbon;
 
 it('correctly maps values to dates', function () {
-    $trend = new Trend(Post::query());
+    $trend = Trend::query(Post::query());
 
     $startDate = Carbon::parse('2024-01-01');
     $endDate = Carbon::parse('2024-01-10');
@@ -48,7 +48,7 @@ it('correctly aggregates data', function () {
         ->count(2)
         ->create(['created_at' => Carbon::parse('2024-01-03'), 'summable_column' => 15]);
 
-    $trend = new Trend(Post::query());
+    $trend = Trend::query(Post::query());
 
     $startDate = Carbon::parse('2024-01-01');
     $endDate = Carbon::parse('2024-01-03');
@@ -64,4 +64,10 @@ it('correctly aggregates data', function () {
     ]);
 
     expect($result->values())->toEqual($expected->values());
+});
+
+it('correctly sets the date column', function () {
+    $trend = Trend::query(Post::query());
+    $trend->dateColumn('custom_date_column');
+    expect($trend->dateColumn)->toBe('custom_date_column');
 });
