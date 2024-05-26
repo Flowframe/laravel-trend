@@ -77,3 +77,9 @@ it('correctly sets the date alias', function () {
     $trend->dateAlias('custom_date_alias');
     expect($trend->dateAlias)->toBe('custom_date_alias');
 });
+
+it('correctly sets the interval', function () {
+    $trend = Trend::query(Post::query());
+    $trend->interval('month');
+    expect($trend->interval)->toBe('month');
+});
