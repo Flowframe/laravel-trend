@@ -13,10 +13,10 @@ class TestCase extends Orchestra
     {
         parent::setUp();
 
-        $this->loadMigrationsFrom(__DIR__.'/fixtures/database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/Fixtures/Database/migrations');
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Flowframe\\Trend\\Tests\\fixtures\\database\\factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName) => 'Flowframe\\Trend\\Tests\\Fixtures\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
     }
 

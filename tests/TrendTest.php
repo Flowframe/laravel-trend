@@ -1,6 +1,6 @@
 <?php
 
-use Flowframe\Trend\Tests\fixtures\Models\Post;
+use Flowframe\Trend\Tests\Fixtures\Models\Post;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 use Illuminate\Support\Carbon;
