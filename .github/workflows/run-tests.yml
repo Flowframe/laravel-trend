@@ -3,10 +3,10 @@ name: run-tests
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   test:
@@ -15,10 +15,10 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        php: [8.0, 8.1, '8.2']
-        laravel: ['9.*', '10.*', '11.0', ^8.71]
-        stability: [prefer-lowest, prefer-stable]
+        os: [ ubuntu-latest, windows-latest ]
+        php: [ 8.0, 8.1, '8.2' ]
+        laravel: [ '9.*', '10.*', '11.0', ^8.71 ]
+        stability: [ prefer-lowest, prefer-stable ]
         include:
           - laravel: 10.*
             testbench: 8.*
@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
