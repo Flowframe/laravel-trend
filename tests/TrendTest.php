@@ -82,4 +82,17 @@ it('correctly sets the interval', function () {
     $trend = Trend::query(Post::query());
     $trend->interval('month');
     expect($trend->interval)->toBe('month');
+
+    $intervals = collect([
+        'perMinute' => 'minute',
+        'perHour' => 'hour',
+        'perDay' => 'day',
+        'perMonth' => 'month',
+        'perYear' => 'year',
+    ]);
+
+    $intervals->each(function (string $interval, string $method) use ($trend) {
+        $trend->{$method}();
+        expect($trend->interval)->toBe($interval);
+    });
 });
