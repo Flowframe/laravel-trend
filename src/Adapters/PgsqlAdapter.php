@@ -17,6 +17,6 @@ class PgsqlAdapter extends AbstractAdapter
             default => throw new Error('Invalid interval.'),
         };
 
-        return "to_char({$column}, '{$format}')";
+        return "to_char(\"{$column}\", '{$format}')";
     }
 }
