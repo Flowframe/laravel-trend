@@ -23,6 +23,8 @@ class Trend
 
     public string $dateAlias = 'date';
 
+    public string $dateFormat;
+
     public function __construct(public Builder $builder)
     {
     }
@@ -80,6 +82,13 @@ class Trend
     public function dateColumn(string $column): self
     {
         $this->dateColumn = $column;
+
+        return $this;
+    }
+
+    protected function dateFormat(string $format): self
+    {
+        $this->dateFormat = $format;
 
         return $this;
     }
@@ -177,6 +186,10 @@ class Trend
 
     protected function getCarbonDateFormat(): string
     {
+        if ($this->dateFormat) {
+            return $this->dateFormat;
+        }
+
         return match ($this->interval) {
             'minute' => 'Y-m-d H:i:00',
             'hour' => 'Y-m-d H:00',
