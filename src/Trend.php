@@ -23,7 +23,7 @@ class Trend
 
     public string $dateAlias = 'date';
 
-    public string $dateFormat;
+    public string $dateFormat = '';
 
     public function __construct(public Builder $builder)
     {
@@ -86,7 +86,7 @@ class Trend
         return $this;
     }
 
-    protected function dateFormat(string $format): self
+    public function dateFormat(string $format): self
     {
         $this->dateFormat = $format;
 
@@ -144,7 +144,7 @@ class Trend
     public function mapValuesToDates(Collection $values): Collection
     {
         $values = $values->map(fn ($value) => new TrendValue(
-            date: $value->{$this->dateAlias},
+            date: Carbon::parse($value->{$this->dateAlias})->format($this->getCarbonDateFormat()),
             aggregate: $value->aggregate,
         ));
 
