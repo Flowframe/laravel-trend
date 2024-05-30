@@ -100,6 +100,21 @@ Trend::model(Order::class)
 
 This allows you to work with models that have custom date column names or when you want to analyze data based on a different date column.
 
+## Custom date format
+
+If you need a different date format than the default, you can use the `dateFormat(string $format)` method.
+
+```php
+$trend = Trend::model(User::class)
+    ->between(
+        start: now()->startOfYear(),
+        end: now()->endOfYear(),
+    )
+    ->dateFormat('m/Y')
+    ->perMonth()
+    ->count();
+```
+
 ## Drivers
 
 We currently support three drivers:
