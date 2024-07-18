@@ -166,7 +166,7 @@ class Trend
     protected function getSqlDate(): string
     {
         $adapter = match ($this->builder->getConnection()->getDriverName()) {
-            'mysql', 'mariadb' => new MySqlAdapter(),
+            'mysql', 'mariadb', 'singlestore' => new MySqlAdapter(),
             'sqlite' => new SqliteAdapter(),
             'pgsql' => new PgsqlAdapter(),
             default => throw new Error('Unsupported database driver.'),
