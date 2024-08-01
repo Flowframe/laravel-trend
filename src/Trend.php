@@ -10,9 +10,12 @@ use Flowframe\Trend\Adapters\SqliteAdapter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Traits\Macroable;
 
 class Trend
 {
+    use Macroable;
+    
     public string $interval;
 
     public Carbon $start;
