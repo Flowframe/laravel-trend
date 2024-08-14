@@ -35,10 +35,6 @@ class Trend
             'pgsql' => new PgsqlAdapter(),
             default => throw new Error('Unsupported database driver.'),
         };
-
-        if ($this->adapter instanceof OracleAdapter) {
-            $this->dateAlias = "\"{$this->dateAlias}\"";
-        }
     }
 
     public static function query(Builder $builder): self
@@ -107,12 +103,11 @@ class Trend
 
     public function aggregate(string $column, string $aggregate): Collection
     {
-
         $builder = $this->builder
             ->toBase()
             ->selectRaw("
-                {$this->getSqlDate()} as {$this->dateAlias},
-                {$aggregate}({$column}) as aggregate
+                {$this->getSqlDate()} as \"{$this->dateAlias}\",
+                {$aggregate}({$column}) as \"aggregate\"
             ")
             ->whereBetween($this->dateColumn, [$this->start, $this->end]);
 
