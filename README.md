@@ -108,6 +108,7 @@ We currently support three drivers:
 -   MariaDB
 -   SQLite
 -   PostgreSQL
+-   Oracle
 
 ## Security Vulnerabilities
 
