@@ -29,6 +29,7 @@ class Trend
     public function __construct(public Builder $builder)
     {
         $this->adapter = match ($this->builder->getConnection()->getDriverName()) {
+            'oracle' => new OracleAdapter(),
             'mysql', 'mariadb' => new MySqlAdapter(),
             'sqlite' => new SqliteAdapter(),
             'pgsql' => new PgsqlAdapter(),
