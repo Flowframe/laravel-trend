@@ -5,6 +5,7 @@ namespace Flowframe\Trend;
 use Carbon\CarbonPeriod;
 use Error;
 use Flowframe\Trend\Adapters\MySqlAdapter;
+use Flowframe\Trend\Adapters\OracleAdapter;
 use Flowframe\Trend\Adapters\PgsqlAdapter;
 use Flowframe\Trend\Adapters\SqliteAdapter;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,8 +24,20 @@ class Trend
 
     public string $dateAlias = 'date';
 
+    private OracleAdapter | MySqlAdapter | PgsqlAdapter | SqliteAdapter $adapter;
+
     public function __construct(public Builder $builder)
     {
+        $this->adapter = match ($this->builder->getConnection()->getDriverName()) {
+            'mysql', 'mariadb' => new MySqlAdapter(),
+            'sqlite' => new SqliteAdapter(),
+            'pgsql' => new PgsqlAdapter(),
+            default => throw new Error('Unsupported database driver.'),
+        };
+
+        if ($this->adapter instanceof OracleAdapter) {
+            $this->dateAlias = "\"{$this->dateAlias}\"";
+        }
     }
 
     public static function query(Builder $builder): self
@@ -93,16 +106,26 @@ class Trend
 
     public function aggregate(string $column, string $aggregate): Collection
     {
-        $values = $this->builder
+
+        $builder = $this->builder
             ->toBase()
             ->selectRaw("
                 {$this->getSqlDate()} as {$this->dateAlias},
                 {$aggregate}({$column}) as aggregate
             ")
-            ->whereBetween($this->dateColumn, [$this->start, $this->end])
-            ->groupBy($this->dateAlias)
-            ->orderBy($this->dateAlias)
-            ->get();
+            ->whereBetween($this->dateColumn, [$this->start, $this->end]);
+
+        if ($this->adapter instanceof OracleAdapter) {
+            $builder
+                ->groupByRaw($this->getSqlDate())
+                ->orderByRaw("{$this->getSqlDate()} asc");
+        } else {
+            $builder
+                ->groupBy($this->dateAlias)
+                ->orderBy($this->dateAlias);
+        }
+
+        $values = $builder->get();
 
         return $this->mapValuesToDates($values);
     }
@@ -165,14 +188,7 @@ class Trend
 
     protected function getSqlDate(): string
     {
-        $adapter = match ($this->builder->getConnection()->getDriverName()) {
-            'mysql', 'mariadb' => new MySqlAdapter(),
-            'sqlite' => new SqliteAdapter(),
-            'pgsql' => new PgsqlAdapter(),
-            default => throw new Error('Unsupported database driver.'),
-        };
-
-        return $adapter->format($this->dateColumn, $this->interval);
+        return $this->adapter->format($this->dateColumn, $this->interval);
     }
 
     protected function getCarbonDateFormat(): string
