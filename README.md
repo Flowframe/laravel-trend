@@ -102,7 +102,7 @@ This allows you to work with models that have custom date column names or when y
 
 ## Drivers
 
-We currently support three drivers:
+We currently support four drivers:
 
 -   MySQL
 -   MariaDB
