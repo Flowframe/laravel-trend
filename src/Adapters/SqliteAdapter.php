@@ -12,6 +12,7 @@ class SqliteAdapter extends AbstractAdapter
             'minute' => '%Y-%m-%d %H:%M:00',
             'hour' => '%Y-%m-%d %H:00',
             'day' => '%Y-%m-%d',
+            'week' => '%Y-%W',
             'month' => '%Y-%m',
             'year' => '%Y',
             default => throw new Error('Invalid interval.'),
