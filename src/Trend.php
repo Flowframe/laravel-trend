@@ -178,7 +178,6 @@ class Trend
 
                 return $carry;
             }, collect())
-            ->dd()
             ->flatten();
     }
 
