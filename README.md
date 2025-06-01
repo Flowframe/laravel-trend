@@ -104,7 +104,7 @@ This allows you to work with models that have custom date column names or when y
 
 If you need to format the returned Trend you can use standard laravel collection helpers like map():
 
-```
+```php
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
 
@@ -112,7 +112,8 @@ $trend = Trend::model(...)
     ->between(...)
     ->perDay()
     ->count();
-    ->map(fn (TrendValue $item) => $item->aggregate = round($item->aggregate));
+
+$trend->map(fn (TrendValue $item) => $item->aggregate = round($item->aggregate));
 ```
 
 ## Drivers
