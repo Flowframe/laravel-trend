@@ -100,9 +100,9 @@ Trend::model(Order::class)
 
 This allows you to work with models that have custom date column names or when you want to analyze data based on a different date column.
 
-## Using Collection Helpers Like Map
+## Using Collection Helpers Like Map()
 
-If you need to format the returned Trend you can do so like this:
+If you need to format the returned Trend you can use standard laravel collection helpers like map():
 
 ```
 use Flowframe\Trend\Trend;
