@@ -27,17 +27,17 @@ class Trend
     {
     }
 
-    public static function query(Builder $builder): self
+    public static function query(Builder $builder): static
     {
         return new static($builder);
     }
 
-    public static function model(string $model): self
+    public static function model(string $model): static
     {
         return new static($model::query());
     }
 
-    public function between($start, $end): self
+    public function between($start, $end): static
     {
         $this->start = $start;
         $this->end = $end;
@@ -45,51 +45,51 @@ class Trend
         return $this;
     }
 
-    public function interval(string $interval): self
+    public function interval(string $interval): static
     {
         $this->interval = $interval;
 
         return $this;
     }
 
-    public function perMinute(): self
+    public function perMinute(): static
     {
         return $this->interval('minute');
     }
 
-    public function perHour(): self
+    public function perHour(): static
     {
         return $this->interval('hour');
     }
 
-    public function perDay(): self
+    public function perDay(): static
     {
         return $this->interval('day');
     }
 
-    public function perWeek(): self
+    public function perWeek(): static
     {
         return $this->interval('week');
     }
 
-    public function perMonth(): self
+    public function perMonth(): static
     {
         return $this->interval('month');
     }
 
-    public function perYear(): self
+    public function perYear(): static
     {
         return $this->interval('year');
     }
 
-    public function dateColumn(string $column): self
+    public function dateColumn(string $column): static
     {
         $this->dateColumn = $column;
 
         return $this;
     }
 
-    public function dateAlias(string $alias): self
+    public function dateAlias(string $alias): static
     {
         $this->dateAlias = $alias;
 
