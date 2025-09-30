@@ -1,12 +1,12 @@
 {
-    "name": "flowframe/laravel-trend",
+    "name": "realtemirov/laravel-trend",
     "description": "Easily generate model trends",
     "keywords": [
         "Flowframe",
         "laravel",
         "laravel-trend"
     ],
-    "homepage": "https://github.com/flowframe/laravel-trend",
+    "homepage": "https://github.com/realtemirov/laravel-trend",
     "license": "MIT",
     "authors": [
         {
