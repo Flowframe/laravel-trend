@@ -21,6 +21,8 @@ class Trend
 
     public string $dateColumn = 'created_at';
 
+    public array $groupBy = ['created_at'];
+
     public string $dateAlias = 'date';
 
     public function __construct(public Builder $builder)
@@ -96,6 +98,13 @@ class Trend
         return $this;
     }
 
+    public function groupBy(array $groupBy): self
+    {
+        $this->groupBy = $groupBy;
+
+        return $this;
+    }
+
     public function aggregate(string $column, string $aggregate): Collection
     {
         $values = $this->builder
@@ -105,8 +114,7 @@ class Trend
                 {$aggregate}({$column}) as aggregate
             ")
             ->whereBetween($this->dateColumn, [$this->start, $this->end])
-            ->groupBy($this->dateAlias)
-            ->orderBy($this->dateAlias)
+            ->groupBy($this->groupBy)
             ->get();
 
         return $this->mapValuesToDates($values);
