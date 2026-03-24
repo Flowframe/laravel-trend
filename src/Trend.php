@@ -5,6 +5,7 @@ namespace Flowframe\Trend;
 use Carbon\CarbonInterface;
 use Carbon\CarbonPeriod;
 use Error;
+use Flowframe\Trend\Adapters\MsSqlServerAdapter;
 use Flowframe\Trend\Adapters\MySqlAdapter;
 use Flowframe\Trend\Adapters\PgsqlAdapter;
 use Flowframe\Trend\Adapters\SqliteAdapter;
@@ -174,6 +175,7 @@ class Trend
             'mysql', 'mariadb' => new MySqlAdapter(),
             'sqlite' => new SqliteAdapter(),
             'pgsql' => new PgsqlAdapter(),
+            'sqlsrv' => new MsSqlServerAdapter(),
             default => throw new Error('Unsupported database driver.'),
         };
 
