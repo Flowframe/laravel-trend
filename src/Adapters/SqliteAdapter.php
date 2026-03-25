@@ -8,6 +8,12 @@ class SqliteAdapter extends AbstractAdapter
 {
     public function format(string $column, string $interval): string
     {
+        // Fix wrong week date format after SQLite v3.46
+        // Using coalesce for backward compatibility
+        if ($interval === 'week') {
+            return "coalesce(strftime('%G-%V', {$column}), strftime('%Y-%W', {$column}))";
+        }
+
         $format = match ($interval) {
             'minute' => '%Y-%m-%d %H:%M:00',
             'hour' => '%Y-%m-%d %H:00',
