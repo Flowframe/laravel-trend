@@ -100,6 +100,22 @@ Trend::model(Order::class)
 
 This allows you to work with models that have custom date column names or when you want to analyze data based on a different date column.
 
+## Using Collection Helpers Like Map()
+
+If you need to format the returned Trend you can use standard laravel collection helpers like map():
+
+```php
+use Flowframe\Trend\Trend;
+use Flowframe\Trend\TrendValue;
+
+$trend = Trend::model(...)
+    ->between(...)
+    ->perDay()
+    ->count();
+
+$trend->map(fn (TrendValue $item) => $item->aggregate = round($item->aggregate));
+```
+
 ## Drivers
 
 We currently support four drivers:
