@@ -146,7 +146,7 @@ class Trend
 
         $placeholders = $this->getDatePeriod()->map(
             fn (CarbonInterface $date) => new TrendValue(
-                date: $date->format($this->getCarbonDateFormat()),
+                date: $date->format($this->getCarbonDateFormat($date)),
                 aggregate: 0,
             )
         );
@@ -180,16 +180,23 @@ class Trend
         return $adapter->format($this->dateColumn, $this->interval);
     }
 
-    protected function getCarbonDateFormat(): string
+    protected function getCarbonDateFormat(CarbonInterface $date): string
     {
-        return match ($this->interval) {
-            'minute' => 'Y-m-d H:i:00',
-            'hour' => 'Y-m-d H:00',
-            'day' => 'Y-m-d',
-            'week' => 'Y-W',
-            'month' => 'Y-m',
-            'year' => 'Y',
+        return (match ($this->interval) {
+            'minute' => fn() => 'Y-m-d H:i:00',
+            'hour' => fn() => 'Y-m-d H:00',
+            'day' => fn() => 'Y-m-d',
+            'week' => function(CarbonInterface $date) {
+                // Handle the special case for week 53 of the year
+                // when the week starts in December and ends in January of the next year.
+                if ($date->week === 1 && $date->month === 12 && $this->interval === 'week') {
+                    return 'Y-53';
+                }
+                return 'Y-W';
+            },
+            'month' => fn() => 'Y-m',
+            'year' => fn() => 'Y',
             default => throw new Error('Invalid interval.'),
-        };
+        })($date);
     }
 }
