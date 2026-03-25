@@ -84,6 +84,57 @@ You can use the following aggregates:
 -   `min('column')`
 -   `count('*')`
 
+## Forecasting
+
+The package supports generating forecasts based on your historical trend data. Use one of the following forecasting methods:
+
+```php
+// Forecast 3 more months using linear regression
+$trend = Trend::model(Order::class)
+    ->between(
+        start: now()->startOfYear(),
+        end: now()->endOfMonth(),
+    )
+    ->perMonth()
+    ->forecastPeriods(3, 'linear')
+    ->count();
+
+// Forecast until a specific date using moving average
+$trend = Trend::model(Order::class)
+    ->between(
+        start: now()->subMonths(6),
+        end: now(),
+    )
+    ->perMonth()
+    ->forecastUntil(now()->addMonths(3), 'moving-average')
+    ->sum('total');
+```
+
+### Forecasting Methods
+
+The following forecasting methods are available:
+
+- `linear` - Uses linear regression to predict future values (default)
+- `moving-average` - Uses a simple moving average of the last 3 periods
+- `weighted-moving-average` - Uses a weighted moving average that gives more weight to recent data
+- `exponential-smoothing` - Uses exponential smoothing with alpha = 0.3
+
+### Identifying Forecasted Values
+
+Forecasted values are tagged with an `isForecast` property, which you can use to style or label them differently in your UI:
+
+```php
+$trend->each(function ($value) {
+    if ($value->isForecast) {
+        // This is a forecasted value
+        echo "Forecast for {$value->date}: {$value->aggregate}";
+    } else {
+        // This is a historical value
+        echo "Actual for {$value->date}: {$value->aggregate}";
+    }
+});
+```
+
 ## Date Column
 
 By default, laravel-trend assumes that the model on which the operation is being performed has a `created_at` date column. If your model uses a different column name for the date or you want to use a different one, you should specify it using the `dateColumn(string $column)` method.

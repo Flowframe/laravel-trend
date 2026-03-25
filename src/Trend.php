@@ -2,6 +2,7 @@
 
 namespace Flowframe\Trend;
 
+use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Carbon\CarbonPeriod;
 use Error;
@@ -22,6 +23,12 @@ class Trend
     public string $dateColumn = 'created_at';
 
     public string $dateAlias = 'date';
+    
+    protected ?CarbonInterface $forecastStart = null;
+    
+    protected ?CarbonInterface $forecastEnd = null;
+    
+    protected string $forecastMethod = 'linear';
 
     public function __construct(public Builder $builder)
     {
@@ -42,6 +49,35 @@ class Trend
         $this->start = $start;
         $this->end = $end;
 
+        return $this;
+    }
+    
+    public function forecastUntil(CarbonInterface $end, string $method = 'linear'): self
+    {
+        $this->forecastEnd = $end;
+        $this->forecastMethod = $method;
+        
+        return $this;
+    }
+    
+    public function forecastPeriods(int $periods, string $method = 'linear'): self
+    {
+        if (!isset($this->interval)) {
+            throw new Error('Interval must be set before forecasting periods.');
+        }
+        
+        if (!isset($this->end)) {
+            throw new Error('End date must be set before forecasting periods.');
+        }
+        
+        $this->forecastMethod = $method;
+        
+        // The forecast will start right after the historical end date
+        $this->forecastStart = $this->end->copy()->add($this->interval, 1);
+        
+        // Calculate the end date based on the interval and periods
+        $this->forecastEnd = $this->forecastStart->copy()->add($this->interval, $periods - 1);
+        
         return $this;
     }
 
@@ -109,7 +145,35 @@ class Trend
             ->orderBy($this->dateAlias)
             ->get();
 
-        return $this->mapValuesToDates($values);
+        $historicalData = $this->mapValuesToDates($values);
+        
+        // If forecasting is enabled, generate and append forecast data
+        if ($this->forecastEnd !== null) {
+            $forecastStart = $this->forecastStart ?? $this->end->copy()->add($this->interval, 1);
+            
+            $forecast = new TrendForecast(
+                $historicalData,
+                $this->interval,
+                $forecastStart,
+                $this->forecastEnd
+            );
+            
+            $forecastData = $forecast->method($this->forecastMethod)->generate();
+            
+            // Identify forecast data with a flag
+            $forecastData = $forecastData->map(function (TrendValue $value) {
+                return new TrendValue(
+                    date: $value->date,
+                    aggregate: $value->aggregate,
+                    isForecast: true
+                );
+            });
+            
+            // Merge historical and forecast data
+            return $historicalData->merge($forecastData);
+        }
+        
+        return $historicalData;
     }
 
     public function average(string $column): Collection
