@@ -100,6 +100,23 @@ Trend::model(Order::class)
 
 This allows you to work with models that have custom date column names or when you want to analyze data based on a different date column.
 
+## Date Column Alias
+
+By default, laravel-trend creates a grouping select field in its database query named `date`. This can cause problems if you have a column on that table already named `date`. To avoid this conflict in the query specify a different name with `dateAlias(string $alias)` method.
+
+Example:
+
+```php
+Trend::model(Order::class)
+    ->dateColumn('date')
+    ->dateAlias('date_alias')
+    ->between(...)
+    ->perDay()
+    ->count();
+```
+
+This allows you to work with models that have a column named `date`.
+
 ## Drivers
 
 We currently support four drivers:
