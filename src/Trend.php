@@ -177,7 +177,10 @@ class Trend
             default => throw new Error('Unsupported database driver.'),
         };
 
-        return $adapter->format($this->dateColumn, $this->interval);
+        return $adapter->format(
+            $this->builder->getGrammar()->wrap($this->dateColumn),
+            $this->interval
+        );
     }
 
     protected function getCarbonDateFormat(): string
