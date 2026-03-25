@@ -155,6 +155,29 @@ class Trend
             ->merge($placeholders)
             ->unique('date')
             ->sort()
+            ->reduce(function (Collection $carry, TrendValue $trendValue) {
+                if ($this->interval !== 'week') {
+                    $carry->push($trendValue);
+                    return $carry;
+                }
+
+                [
+                    $year,
+                    $month,
+                ] = explode('-', $trendValue->date);
+                // Handle the special case for week 53 of the year
+                // when the week starts in December and ends in January of the next year merge with the first week of the next year.
+                if ($month == '01') {
+                    if ($lastIndex = $carry->search(fn (TrendValue $value) => $value->date === ($year - 1) . '-53')) {
+                        $last = $carry->get($lastIndex);
+                        $trendValue->aggregate += $last->aggregate;
+                        $carry->splice($lastIndex, 1);
+                    }
+                }
+                $carry->push($trendValue);
+
+                return $carry;
+            }, collect())
             ->flatten();
     }
 
