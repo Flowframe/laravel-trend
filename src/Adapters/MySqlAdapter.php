@@ -6,7 +6,7 @@ use Error;
 
 class MySqlAdapter extends AbstractAdapter
 {
-    public function format(string $column, string $interval): string
+    public function format(string $column, string $interval, bool $isUnixTimestamp = false): string
     {
         $format = match ($interval) {
             'minute' => '%Y-%m-%d %H:%i:00',
@@ -18,6 +18,8 @@ class MySqlAdapter extends AbstractAdapter
             default => throw new Error('Invalid interval.'),
         };
 
-        return "date_format({$column}, '{$format}')";
+        $columnExpression = $isUnixTimestamp ? "FROM_UNIXTIME({$column})" : $column;
+
+        return "date_format({$columnExpression}, '{$format}')";
     }
 }

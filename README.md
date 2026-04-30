@@ -100,6 +100,19 @@ Trend::model(Order::class)
 
 This allows you to work with models that have custom date column names or when you want to analyze data based on a different date column.
 
+If your date column stores Unix timestamps (integer seconds since epoch), use `dateColumnIsUnixTimestamp()`.
+
+Example:
+
+```php
+Trend::model(Order::class)
+    ->dateColumn('custom_date_column')
+    ->dateColumnIsUnixTimestamp()
+    ->between(...)
+    ->perDay()
+    ->count();
+```
+
 ## Drivers
 
 We currently support four drivers:
