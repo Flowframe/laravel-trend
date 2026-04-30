@@ -23,6 +23,8 @@ class Trend
 
     public string $dateAlias = 'date';
 
+    public bool $dateColumnIsUnixTimestamp = false;
+
     public function __construct(public Builder $builder)
     {
     }
@@ -96,6 +98,13 @@ class Trend
         return $this;
     }
 
+    public function dateColumnIsUnixTimestamp(bool $isUnixTimestamp = true): self
+    {
+        $this->dateColumnIsUnixTimestamp = $isUnixTimestamp;
+
+        return $this;
+    }
+
     public function aggregate(string $column, string $aggregate): Collection
     {
         $values = $this->builder
@@ -104,7 +113,12 @@ class Trend
                 {$this->getSqlDate()} as {$this->dateAlias},
                 {$aggregate}({$column}) as aggregate
             ")
-            ->whereBetween($this->dateColumn, [$this->start, $this->end])
+            ->whereBetween(
+                $this->dateColumn,
+                $this->dateColumnIsUnixTimestamp
+                    ? [$this->start->timestamp, $this->end->timestamp]
+                    : [$this->start, $this->end]
+            )
             ->groupBy($this->dateAlias)
             ->orderBy($this->dateAlias)
             ->get();
@@ -177,7 +191,11 @@ class Trend
             default => throw new Error('Unsupported database driver.'),
         };
 
-        return $adapter->format($this->dateColumn, $this->interval);
+        return $adapter->format(
+            $this->dateColumn,
+            $this->interval,
+            $this->dateColumnIsUnixTimestamp,
+        );
     }
 
     protected function getCarbonDateFormat(): string

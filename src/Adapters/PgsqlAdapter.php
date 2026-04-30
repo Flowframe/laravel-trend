@@ -6,7 +6,7 @@ use Error;
 
 class PgsqlAdapter extends AbstractAdapter
 {
-    public function format(string $column, string $interval): string
+    public function format(string $column, string $interval, bool $isUnixTimestamp = false): string
     {
         $format = match ($interval) {
             'minute' => 'YYYY-MM-DD HH24:MI:00',
@@ -18,6 +18,8 @@ class PgsqlAdapter extends AbstractAdapter
             default => throw new Error('Invalid interval.'),
         };
 
-        return "to_char(\"{$column}\", '{$format}')";
+        $columnExpression = $isUnixTimestamp ? "TO_TIMESTAMP({$column})" : "\"{$column}\"";
+
+        return "to_char({$columnExpression}, '{$format}')";
     }
 }

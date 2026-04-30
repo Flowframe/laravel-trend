@@ -6,7 +6,7 @@ use Error;
 
 class SqliteAdapter extends AbstractAdapter
 {
-    public function format(string $column, string $interval): string
+    public function format(string $column, string $interval, bool $isUnixTimestamp = false): string
     {
         $format = match ($interval) {
             'minute' => '%Y-%m-%d %H:%M:00',
@@ -18,6 +18,8 @@ class SqliteAdapter extends AbstractAdapter
             default => throw new Error('Invalid interval.'),
         };
 
-        return "strftime('{$format}', {$column})";
+        $columnExpression = $isUnixTimestamp ? "{$column}, 'unixepoch'" : $column;
+
+        return "strftime('{$format}', {$columnExpression})";
     }
 }
